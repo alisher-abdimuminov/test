@@ -8,5 +8,6 @@ dependencies = [
     "cookiecutter>=2.7.1",
     "django>=6.1",
     "django-tailwind[reload]>=4.5.0",
+    "gunicorn>=26.2.0",
     "reportlab>=5.0.1",
 ]
