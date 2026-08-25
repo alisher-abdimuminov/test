@@ -7,7 +7,7 @@ SECRET_KEY = "django-insecure-stnp^qh%9_1ff4*r0eyj$z534^r&538rjqx*qhb(f7)s(qfo2z
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["test.samdpi.uz", "localhost", "127.0.0.1"]
 
 
 INSTALLED_APPS = [
