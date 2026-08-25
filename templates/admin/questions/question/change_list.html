@@ -1,0 +1,10 @@
+<!-- prettier-ignore -->
+{% extends "admin/change_list.html" %}
+{% load i18n %}
+{% block object-tools-items %}
+<li>
+	<a href="{% url 'admin:questions_question_import' %}" class="addlink">
+		Bulk import
+	</a>
+</li>
+{{ block.super }} {% endblock %}

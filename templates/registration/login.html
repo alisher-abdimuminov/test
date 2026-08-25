@@ -1,0 +1,64 @@
+<!--prettier-ignore-->
+{% load static %}
+{% load tailwind_tags %}
+<!doctype html>
+<html lang="uz">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Kirish</title>
+		{% tailwind_css %}
+	</head>
+	<body
+		class="flex min-h-screen items-center justify-center bg-slate-100 p-4"
+	>
+		<div
+			class="w-full max-w-md rounded-2xl bg-white p-8 shadow-sm ring-1 ring-slate-200"
+		>
+			<div class="mb-8 text-center">
+				<h1 class="text-2xl font-bold">Test tizimiga kirish</h1>
+				<p class="mt-2 text-sm text-slate-500">
+					Admin bergan login va parolni kiriting.
+				</p>
+			</div>
+
+			{% if form.errors %}
+			<div class="mb-5 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+				Login yoki parol noto‘g‘ri.
+			</div>
+			{% endif %}
+
+			<form method="post" class="space-y-5">
+				{% csrf_token %}
+				<div>
+					<label class="mb-1.5 block text-sm font-medium"
+						>Login</label
+					>
+					<input
+						type="text"
+						name="username"
+						autofocus
+						required
+						class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-500"
+					/>
+				</div>
+				<div>
+					<label class="mb-1.5 block text-sm font-medium"
+						>Parol</label
+					>
+					<input
+						type="password"
+						name="password"
+						required
+						class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-500"
+					/>
+				</div>
+				<button
+					class="w-full rounded-xl bg-slate-900 px-4 py-3 font-semibold text-white hover:bg-slate-800"
+				>
+					Kirish
+				</button>
+			</form>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Testni boshlash{% endblock %}
+{% block content %}
+<main class="mx-auto max-w-xl px-4 py-10 sm:px-6">
+  <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+    <h1 class="text-2xl font-bold">{{ assignment.test.title }}</h1>
+    <p class="mt-2 text-sm text-slate-500">Testni boshlashdan oldin mutaxassislik va xorijiy tilni tanlang. Tanlov test boshlanganidan keyin o‘zgarmaydi.</p>
+
+    <div class="mt-5 grid grid-cols-2 gap-3 text-sm">
+      <div class="rounded-xl bg-slate-50 p-3"><span class="block text-slate-500">Vaqt</span><strong>{{ assignment.test.duration_minutes }} daqiqa</strong></div>
+      <div class="rounded-xl bg-slate-50 p-3"><span class="block text-slate-500">Savollar</span><strong>{{ assignment.test.total_questions }} ta</strong></div>
+    </div>
+
+    <form method="post" class="mt-7 space-y-5">
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="rounded-lg bg-red-50 p-3 text-sm text-red-700">{{ form.non_field_errors }}</div>{% endif %}
+      <div>
+        <label class="mb-1.5 block text-sm font-medium">{{ form.speciality.label }}</label>
+        <select name="speciality" required class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3">
+          {% for value, label in form.speciality.field.choices %}<option value="{{ value }}" {% if form.speciality.value|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        </select>
+        {% for error in form.speciality.errors %}<p class="mt-1 text-sm text-red-600">{{ error }}</p>{% endfor %}
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium">{{ form.foreign_language.label }}</label>
+        <select name="foreign_language" required class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3">
+          {% for value, label in form.foreign_language.field.choices %}<option value="{{ value }}" {% if form.foreign_language.value|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        </select>
+        {% for error in form.foreign_language.errors %}<p class="mt-1 text-sm text-red-600">{{ error }}</p>{% endfor %}
+      </div>
+      <button class="w-full rounded-xl bg-slate-900 px-5 py-3 font-semibold text-white">Testni boshlash</button>
+    </form>
+  </div>
+</main>
+{% endblock %}

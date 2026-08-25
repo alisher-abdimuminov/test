@@ -1,0 +1,51 @@
+{% extends "admin/base_site.html" %} {% block content %}
+<div id="content-main">
+	<p>
+		<strong> Format: </strong>
+	</p>
+	<pre>
+Savol matni
+#to'g'ri javob
+noto'g'ri javob
+noto'g'ri javob
+noto'g'ri javob
+
+Keyingi savol...</pre>
+
+	<form method="post" novalidate>
+		{% csrf_token %} {{ form.as_p }}
+		<div class="submit-row">
+			<button type="submit" name="preview" class="default">
+				Tekshirish / Preview
+			</button>
+			{% if preview %}
+			<button type="submit" name="import" class="default">
+				{{ preview|length }} ta savolni import qilish
+			</button>
+			{% endif %}
+		</div>
+	</form>
+
+	{% if preview %}
+	<h2>Preview: {{ preview|length }} ta savol</h2>
+	<ol>
+		{% for item in preview|slice:":10" %}
+		<li>
+			<strong>{{ item.text }}</strong>
+			<ul>
+				{% for choice in item.choices %}
+				<li>
+					{% if choice.is_correct %}
+					<strong>#</strong>
+					{% endif %} {{ choice.text }}
+				</li>
+				{% endfor %}
+			</ul>
+		</li>
+		{% endfor %}
+	</ol>
+	{% if preview|length > 10 %}
+	<p>Faqat dastlabki 10 ta savol ko‘rsatildi.</p>
+	{% endif %} {% endif %}
+</div>
+{% endblock %}

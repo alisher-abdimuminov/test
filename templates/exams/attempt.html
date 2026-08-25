@@ -1,0 +1,277 @@
+<!--prettier-ignore-->
+{% extends "base.html" %}
+{% block title %}{{ attempt.assignment.test.title }}{% endblock %}
+{% block content %}
+<div
+	id="exam-app"
+	data-expires-at="{{ attempt.expires_at|date:'c' }}"
+	data-save-url="{% url 'save_answer' attempt.id %}"
+	data-finish-url="{% url 'finish_test' attempt.id %}"
+>
+	<div
+		class="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur"
+	>
+		<div
+			class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8"
+		>
+			<div class="min-w-0">
+				<div class="truncate font-semibold">
+					{{ attempt.assignment.test.title }}
+				</div>
+				<div class="text-xs text-slate-500">
+					<span id="answered-count">{{ answered_count }}</span>
+					<!--prettier-ignore-->
+					/{{attempt.total_count }} javob berildi
+				</div>
+			</div>
+			<div
+				id="timer"
+				class="rounded-xl bg-slate-900 px-4 py-2 font-mono text-lg font-bold text-white"
+			>
+				--:--
+			</div>
+		</div>
+	</div>
+
+	<main
+		class="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[1fr_250px] lg:px-8"
+	>
+		<section class="space-y-8">
+			<!--prettier-ignore-->
+			{% for section in sections %}
+			<div class="space-y-5">
+				<div
+					class="rounded-2xl border border-slate-200 bg-slate-100 px-5 py-4"
+				>
+					<div
+						class="flex flex-wrap items-center justify-between gap-2"
+					>
+						<h2 class="text-lg font-bold text-slate-900">
+							{{ section.title }}
+						</h2>
+						<span
+							class="rounded-full bg-white px-3 py-1 text-sm font-semibold text-slate-600"
+							>{{ section.questions|length }} ta savol</span
+						>
+					</div>
+				</div>
+
+				<!--prettier-ignore-->
+				{% for aq in section.questions %}
+				<article
+					id="question-{{ aq.display_order }}"
+					class="question-card scroll-mt-24 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+				>
+					<div class="mb-4 flex items-start gap-3">
+						<div
+							class="flex h-8 min-w-8 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white"
+						>
+							{{ aq.display_order }}
+						</div>
+						<div class="min-w-0 flex-1">
+							<div
+								class="whitespace-pre-line font-medium leading-7"
+							>
+								{{ aq.question.text }}
+							</div>
+							<!--prettier-ignore-->
+							{% if aq.question.image %}
+							<img
+								src="{{ aq.question.image.url }}"
+								alt="Savol rasmi"
+								class="mt-4 max-h-96 max-w-full rounded-xl border border-slate-200 object-contain"
+							/>
+							{% endif %}
+						</div>
+					</div>
+
+					<div class="space-y-3 pl-0 sm:pl-11">
+						{% for ac in aq.attempt_choices.all %}
+						<label
+							class="answer-label flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-4 transition hover:border-slate-400 {% if aq.selected_choice_id == ac.choice_id %}border-slate-900 bg-slate-50{% endif %}"
+						>
+							<!--prettier-ignore-->
+							<input type="radio"
+                     name="question_{{ aq.id }}"
+                     value="{{ ac.choice_id }}"
+                     data-question-id="{{ aq.id }}"
+                     data-question-order="{{ aq.display_order }}"
+                     class="answer-radio mt-1 h-4 w-4"
+                     {% if aq.selected_choice_id == ac.choice_id %}checked{% endif %}>
+							<span class="min-w-0 flex-1">
+								<!--prettier-ignore-->
+								{% if ac.choice.text %}<span
+									class="block leading-6"
+									>{{ ac.choice.text }}</span
+								>{% endif %} {% if ac.choice.image %}<img
+									src="{{ ac.choice.image.url }}"
+									alt="Javob rasmi"
+									class="mt-2 max-h-56 max-w-full rounded-lg object-contain"
+								/>{% endif %}
+							</span>
+						</label>
+						{% endfor %}
+					</div>
+				</article>
+				{% endfor %}
+			</div>
+			{% endfor %}
+
+			<div class="flex justify-end pb-10">
+				<button
+					type="button"
+					id="finish-button"
+					class="rounded-xl bg-red-600 px-6 py-3 font-semibold text-white hover:bg-red-700"
+				>
+					Testni yakunlash
+				</button>
+			</div>
+		</section>
+
+		<aside class="hidden lg:block">
+			<div
+				class="sticky top-24 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+			>
+				<h2 class="font-semibold">Savollar</h2>
+				<div class="mt-4 grid grid-cols-5 gap-2">
+					<!--prettier-ignore-->
+					{% for section in sections %}
+					<!--prettier-ignore-->
+					{% for aq in section.questions %}
+					<a
+						href="#question-{{ aq.display_order }}"
+						id="nav-{{ aq.display_order }}"
+						class="question-nav flex h-9 items-center justify-center rounded-lg border text-sm font-semibold {% if aq.selected_choice_id %}border-emerald-600 bg-emerald-50 text-emerald-700{% else %}border-slate-200 text-slate-600{% endif %}"
+						>{{ aq.display_order }}</a
+					>
+					{% endfor %} {% endfor %}
+				</div>
+			</div>
+		</aside>
+	</main>
+
+	<dialog
+		id="finish-dialog"
+		class="fixed inset-0 m-auto w-[min(92vw,460px)] rounded-2xl p-0 backdrop:bg-black/40"
+	>
+		<div class="p-6">
+			<h2 class="text-xl font-bold">Testni yakunlaysizmi?</h2>
+			<p class="mt-2 text-sm text-slate-600">
+				<span id="dialog-answered">{{ answered_count }}</span> ta
+				savolga javob berilgan,
+				<span id="dialog-unanswered">{{ unanswered_count }}</span> ta
+				javobsiz.
+			</p>
+			<div class="mt-6 flex justify-end gap-3">
+				<button
+					type="button"
+					id="cancel-finish"
+					class="rounded-xl border border-slate-300 px-4 py-2.5 font-medium"
+				>
+					Davom etish
+				</button>
+				<form
+					method="post"
+					action="{% url 'finish_test' attempt.id %}"
+					id="finish-form"
+				>
+					{% csrf_token %}
+					<button
+						class="rounded-xl bg-red-600 px-4 py-2.5 font-semibold text-white"
+					>
+						Yakunlash
+					</button>
+				</form>
+			</div>
+		</div>
+	</dialog>
+</div>
+{% endblock %} {% block scripts %}
+<script>
+	(function () {
+	  const app = document.getElementById('exam-app');
+	  const timerEl = document.getElementById('timer');
+	  const answeredEl = document.getElementById('answered-count');
+	  const dialogAnswered = document.getElementById('dialog-answered');
+	  const dialogUnanswered = document.getElementById('dialog-unanswered');
+	  const total = {{ attempt.total_count }};
+	  const expiresAt = new Date(app.dataset.expiresAt).getTime();
+	  let finishing = false;
+
+	  function getCookie(name) {
+	    const value = `; ${document.cookie}`;
+	    const parts = value.split(`; ${name}=`);
+	    if (parts.length === 2) return parts.pop().split(';').shift();
+	  }
+
+	  function answeredCount() {
+	    return new Set(Array.from(document.querySelectorAll('.answer-radio:checked')).map(x => x.dataset.questionId)).size;
+	  }
+
+	  function updateCounters() {
+	    const count = answeredCount();
+	    answeredEl.textContent = count;
+	    dialogAnswered.textContent = count;
+	    dialogUnanswered.textContent = total - count;
+	  }
+
+	  document.querySelectorAll('.answer-radio').forEach(input => {
+	    input.addEventListener('change', async function () {
+	      const questionOrder = this.dataset.questionOrder;
+	      const card = this.closest('.question-card');
+	      card.querySelectorAll('.answer-label').forEach(label => label.classList.remove('border-slate-900', 'bg-slate-50'));
+	      this.closest('.answer-label').classList.add('border-slate-900', 'bg-slate-50');
+
+	      const nav = document.getElementById(`nav-${questionOrder}`);
+	      nav.classList.remove('border-slate-200', 'text-slate-600');
+	      nav.classList.add('border-emerald-600', 'bg-emerald-50', 'text-emerald-700');
+	      updateCounters();
+
+	      try {
+	        const response = await fetch(app.dataset.saveUrl, {
+	          method: 'POST',
+	          headers: {
+	            'Content-Type': 'application/json',
+	            'X-CSRFToken': decodeURIComponent(getCookie('csrftoken') || ''),
+	          },
+	          body: JSON.stringify({
+	            attempt_question_id: Number(this.dataset.questionId),
+	            choice_id: Number(this.value),
+	          }),
+	        });
+	        const data = await response.json();
+	        if (data.expired) window.location.reload();
+	        if (!response.ok) throw new Error(data.error || 'Saqlashda xato');
+	      } catch (error) {
+	        alert('Javobni saqlashda xato yuz berdi. Internet aloqasini tekshirib qayta tanlang.');
+	      }
+	    });
+	  });
+
+	  function updateTimer() {
+	    if (finishing) return;
+	    const diff = expiresAt - Date.now();
+	    if (diff <= 0) {
+	      finishing = true;
+	      timerEl.textContent = '00:00';
+	      document.getElementById('finish-form').submit();
+	      return;
+	    }
+	    const hours = Math.floor(diff / 3600000);
+	    const minutes = Math.floor((diff % 3600000) / 60000);
+	    const seconds = Math.floor((diff % 60000) / 1000);
+	    timerEl.textContent = hours > 0
+	      ? `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+	      : `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+	  }
+
+	  const dialog = document.getElementById('finish-dialog');
+	  document.getElementById('finish-button').addEventListener('click', () => { updateCounters(); dialog.showModal(); });
+	  document.getElementById('cancel-finish').addEventListener('click', () => dialog.close());
+
+	  updateCounters();
+	  updateTimer();
+	  setInterval(updateTimer, 1000);
+	})();
+</script>
+{% endblock %}

@@ -1,0 +1,175 @@
+<!--prettier-ignore-->
+{% extends "base.html" %}
+{% block title %}Mening testlarim{% endblock %}
+{% block content %}
+<main class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+	<div class="mb-6">
+		<h1 class="text-2xl font-bold">Mening testlarim</h1>
+		<p class="mt-1 text-sm text-slate-500">Sizga biriktirilgan testlar.</p>
+	</div>
+
+	<div class="space-y-4">
+		{% for row in rows %}
+		<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+			<div
+				class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+			>
+				<div>
+					<h2 class="text-lg font-semibold">
+						{{ row.assignment.test.title }}
+					</h2>
+					<div
+						class="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-slate-500"
+					>
+						<span>
+							{{ row.assignment.test.duration_minutes }} daqiqa
+						</span>
+						<span>
+							{{ row.assignment.test.total_questions }} ta savol
+						</span>
+						{% if row.assignment.deadline %}
+						<span>
+							<!--prettier-ignore-->
+							Deadline: {{ row.assignment.deadline|date:"d.m.YH:i" }}
+						</span>
+						<!--prettier-ignore-->
+						{% endif %}
+					</div>
+				</div>
+
+				<div>
+					<!--prettier-ignore-->
+					{% if row.attempt %} {% if row.attempt.status == 'in_progress' %}
+					<a
+						href="{% url 'attempt' row.attempt.id %}"
+						class="inline-flex rounded-xl bg-amber-500 px-5 py-2.5 font-semibold text-white"
+					>
+						Davom ettirish
+					</a>
+					{% else %}
+					<a
+						href="{% url 'result' row.attempt.id %}"
+						class="inline-flex rounded-xl bg-emerald-600 px-5 py-2.5 font-semibold text-white"
+					>
+						Natija: {{ row.attempt.score }}/100
+					</a>
+					{% endif %} {% elif row.available %}
+					<button
+						type="button"
+						data-open-dialog="start-dialog-{{ row.assignment.id }}"
+						class="inline-flex rounded-xl bg-slate-900 px-5 py-2.5 font-semibold text-white"
+					>
+						Boshlash
+					</button>
+					{% else %}
+					<span
+						class="inline-flex rounded-xl bg-slate-100 px-5 py-2.5 text-sm font-medium text-slate-500"
+					>
+						Hozir mavjud emas
+					</span>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+
+		<!--prettier-ignore-->
+		{% if not row.attempt and row.available %}
+		<dialog
+			id="start-dialog-{{ row.assignment.id }}"
+			class="fixed inset-0 m-auto w-[min(92vw,440px)] rounded-2xl p-0 backdrop:bg-black/40"
+		>
+			<form
+				method="post"
+				action="{% url 'start_test' row.assignment.id %}"
+				class="p-6"
+			>
+				{% csrf_token %}
+				<div class="flex items-start justify-between gap-4">
+					<div>
+						<h3 class="text-xl font-bold">Testni boshlash</h3>
+						<p class="mt-1 text-sm text-slate-500">
+							{{ row.assignment.test.title }}
+						</p>
+					</div>
+					<button
+						type="button"
+						data-close-dialog
+						class="rounded-lg px-2 py-1 text-xl text-slate-400 hover:bg-slate-100"
+					>
+						×
+					</button>
+				</div>
+				<p class="mt-4 text-sm text-slate-600">
+					Tanlov test boshlanganidan keyin o‘zgarmaydi.
+				</p>
+				<div class="mt-5 space-y-4">
+					<div>
+						<label class="mb-1.5 block text-sm font-medium">
+							Mutaxassislik
+						</label>
+						<select
+							name="speciality"
+							required
+							class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3"
+						>
+							<!--prettier-ignore-->
+							{% for value, label in start_form.speciality.field.choices %}
+							<option value="{{ value }}">{{ label }}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div>
+						<label class="mb-1.5 block text-sm font-medium">
+							Xorijiy til
+						</label>
+						<select
+							name="foreign_language"
+							required
+							class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3"
+						>
+							<!--prettier-ignore-->
+							{% for value, label in start_form.foreign_language.field.choices %}
+							<option value="{{ value }}">{{ label }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+				<div class="mt-6 flex justify-end gap-3">
+					<button
+						type="button"
+						data-close-dialog
+						class="rounded-xl border border-slate-300 px-4 py-2.5 font-medium"
+					>
+						Bekor qilish
+					</button>
+					<button
+						class="rounded-xl bg-slate-900 px-5 py-2.5 font-semibold text-white"
+					>
+						Testni boshlash
+					</button>
+				</div>
+			</form>
+		</dialog>
+		{% endif %} {% empty %}
+		<div
+			class="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500"
+		>
+			Sizga hali test biriktirilmagan.
+		</div>
+		{% endfor %}
+	</div>
+</main>
+{% endblock %} {% block scripts %}
+<script>
+	document.querySelectorAll("[data-open-dialog]").forEach((button) => {
+		button.addEventListener("click", () =>
+			document.getElementById(button.dataset.openDialog).showModal(),
+		);
+	});
+	document.querySelectorAll("[data-close-dialog]").forEach((button) => {
+		button.addEventListener("click", () =>
+			button.closest("dialog").close(),
+		);
+	});
+</script>
+{% endblock %}
