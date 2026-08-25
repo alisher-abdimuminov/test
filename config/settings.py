@@ -83,8 +83,8 @@ STATIC_ROOT = "static"
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
-    "https://ish.samdpi.uz",
-    "http://ish.samdpi.uz",
+    "https://test.samdpi.uz",
+    "http://test.samdpi.uz",
     "http://localhost:8000",
 ]
 
