@@ -45,20 +45,20 @@
 			class="mt-8 grid gap-2 text-left text-sm text-slate-600 sm:grid-cols-2"
 		>
 			<div>
-				<span class="text-slate-400">Mutaxassislik:</span> {{
-				attempt.speciality }}
+				<span class="text-slate-400">Mutaxassislik:</span>
+				{{ attempt.speciality }}
 			</div>
 			<div>
-				<span class="text-slate-400">Xorijiy til:</span> {{
-				attempt.foreign_language }}
+				<span class="text-slate-400">Xorijiy til:</span>
+				{{ attempt.foreign_language }}
 			</div>
 			<div>
-				<span class="text-slate-400">Boshlangan:</span> {{
-				attempt.started_at|date:"d.m.Y H:i" }}
+				<span class="text-slate-400">Boshlangan:</span>
+				{{attempt.started_at|date:"d.m.Y H:i" }}
 			</div>
 			<div>
-				<span class="text-slate-400">Yakunlangan:</span> {{
-				attempt.submitted_at|date:"d.m.Y H:i" }}
+				<span class="text-slate-400">Yakunlangan:</span>
+				{{ attempt.submitted_at|date:"d.m.Y H:i" }}
 			</div>
 		</div>
 
@@ -80,9 +80,8 @@
 				Natijangiz
 			</div>
 			<div class="mt-3 text-6xl font-black">
-				{{ attempt.score }}<span class="text-xl text-slate-400"
-					>/100</span
-				>
+				{{ attempt.score }}
+				<span class="text-xl text-slate-400">/100</span>
 			</div>
 			<p class="mt-3 text-sm text-slate-500">
 				{{ attempt.correct_count }} / {{ attempt.total_count }} ta

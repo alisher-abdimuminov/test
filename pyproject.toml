@@ -12,3 +12,7 @@ dependencies = [
     "gunicorn>=26.2.0",
     "reportlab>=5.0.1",
 ]
+
+[tool.ruff.format]
+indent-style = "tab"
+# indent-width = 4
