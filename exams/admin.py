@@ -88,18 +88,18 @@ class TestAttemptAdmin(admin.ModelAdmin):
 		"assignment__test__title",
 	)
 	actions = [export_results_pdf]
-	readonly_fields = (
-		"assignment",
-		"speciality",
-		"foreign_language",
-		"started_at",
-		"expires_at",
-		"submitted_at",
-		"status",
-		"score",
-		"correct_count",
-		"total_count",
-	)
+	# readonly_fields = (
+	# 	"assignment",
+	# 	"speciality",
+	# 	"foreign_language",
+	# 	"started_at",
+	# 	"expires_at",
+	# 	"submitted_at",
+	# 	"status",
+	# 	"score",
+	# 	"correct_count",
+	# 	"total_count",
+	# )
 
 	def has_add_permission(self, request):
 		return False
