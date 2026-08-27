@@ -57,7 +57,7 @@ class TestAssignmentAdmin(admin.ModelAdmin):
 def export_results_pdf(modeladmin, request, queryset):
 	queryset = queryset.select_related(
 		"assignment__user", "assignment__test", "speciality", "foreign_language"
-	)
+	).order_by("-score")
 	return build_attempts_pdf_response(queryset)
 
 
