@@ -50,7 +50,6 @@ def build_attempts_pdf_response(queryset):
 		[
 			"№",
 			"F.I.Sh.",
-			"Login",
 			"Test",
 			"Mutaxassislik",
 			"Til",
@@ -66,7 +65,6 @@ def build_attempts_pdf_response(queryset):
 			[
 				str(idx),
 				user.get_full_name() or user.username,
-				user.username,
 				attempt.assignment.test.title,
 				attempt.speciality.name,
 				attempt.foreign_language.name,
@@ -81,8 +79,7 @@ def build_attempts_pdf_response(queryset):
 		repeatRows=1,
 		colWidths=[
 			10 * mm,
-			38 * mm,
-			27 * mm,
+			50 * mm,
 			40 * mm,
 			36 * mm,
 			27 * mm,
