@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from reports.pdf import build_attempts_pdf_response
+from reports.pdf import build_attempt_detail_pdf_response, build_attempts_pdf_response
 
 from .models import (
 	AttemptAnswer,
@@ -61,6 +61,25 @@ def export_results_pdf(modeladmin, request, queryset):
 	return build_attempts_pdf_response(queryset)
 
 
+@admin.action(description="Batafsil test natijasini PDF qilish")
+def export_detail_result_pdf(
+	modeladmin,
+	request,
+	queryset,
+):
+	if queryset.count() != 1:
+		modeladmin.message_user(
+			request,
+			"Batafsil PDF uchun faqat bitta natijani tanlang.",
+			level="error",
+		)
+		return None
+
+	attempt = queryset.first()
+
+	return build_attempt_detail_pdf_response(attempt)
+
+
 @admin.register(TestAttempt)
 class TestAttemptAdmin(admin.ModelAdmin):
 	list_display = (
@@ -84,10 +103,11 @@ class TestAttemptAdmin(admin.ModelAdmin):
 	)
 	search_fields = (
 		"assignment__user__username",
-		"assignment__user__full_name",
+		"assignment__user__first_name",
+		"assignment__user__last_name",
 		"assignment__test__title",
 	)
-	actions = [export_results_pdf]
+	actions = [export_results_pdf, export_detail_result_pdf]
 	# readonly_fields = (
 	# 	"assignment",
 	# 	"speciality",
